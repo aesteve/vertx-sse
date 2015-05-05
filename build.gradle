@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+    id 'eclipse'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url 'http://oss.sonatype.org/content/repositories/snapshots/' }
+}
+
+dependencies {
+    // vertx
+    compile 'io.vertx:vertx-core:3.0.0-SNAPSHOT'
+    compile 'io.vertx:vertx-apex:3.0.0-SNAPSHOT'
+    
+    // tests
+    testCompile group: 'io.vertx', name: 'vertx-core', version: '3.0.0-SNAPSHOT', classifier: 'tests'
+    testCompile 'junit:junit:4.12'
+}
+
+if (!JavaVersion.current().java8Compatible) {
+    throw new IllegalStateException("This needs Java 8. You are using ${JavaVersion.current()}.")
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
+}

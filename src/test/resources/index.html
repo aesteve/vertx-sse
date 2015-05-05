@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<h1>Test Server-Side-Events</h1>
+		<div id="content-received"></div>
+		<script type="text/javascript">
+			var evtSource = new EventSource("/sse");
+			var eventList = document.getElementById("content-received");
+			evtSource.onmessage = function(e) {
+			  var newElement = document.createElement("li");
+			  
+			  newElement.innerHTML = "message: " + e.data;
+			  eventList.appendChild(newElement);
+			}
+		</script>
+	</body>
+</html>
