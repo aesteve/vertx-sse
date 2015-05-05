@@ -13,6 +13,7 @@ dependencies {
     // vertx
     compile 'io.vertx:vertx-core:3.0.0-SNAPSHOT'
     compile 'io.vertx:vertx-apex:3.0.0-SNAPSHOT'
+	compile 'io.vertx:vertx-codegen:3.0.0-SNAPSHOT'
     
     // tests
     testCompile group: 'io.vertx', name: 'vertx-core', version: '3.0.0-SNAPSHOT', classifier: 'tests'

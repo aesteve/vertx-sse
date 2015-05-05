@@ -12,6 +12,9 @@
 			  newElement.innerHTML = "message: " + e.data;
 			  eventList.appendChild(newElement);
 			}
+			evtSource.onerror = function(error) {
+				console.log(error);
+			}
 		</script>
 	</body>
 </html>

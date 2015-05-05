@@ -1,19 +1,43 @@
 package io.vertx.ext.apex.sse;
 
-import io.vertx.core.buffer.Buffer;
+import io.vertx.codegen.annotations.Fluent;
+import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.apex.RoutingContext;
-import io.vertx.ext.apex.sse.handlers.impl.SSEHandlerImpl;
 import io.vertx.ext.apex.sse.impl.SSEConnectionImpl;
 
+@VertxGen
 public interface SSEConnection {
 
-    static SSEConnection create(RoutingContext context, SSEHandlerImpl handler) {
-        return new SSEConnectionImpl(context, handler);
+    static SSEConnection create(RoutingContext context) {
+        return new SSEConnectionImpl(context);
     }
+    
+    @Fluent
+    public SSEConnection reject(int code);
+    
+    @Fluent
+    public SSEConnection reject(int code, String reason);
 
-    public SSEConnection data(Buffer buffer);
+    @Fluent
+    public SSEConnection comment(String comment);
+    
+    @Fluent
+    public SSEConnection retry(Long delay, String... data);
+    
+    @Fluent
+    public SSEConnection data(String... data);
 
-    public SSEConnection event(Buffer buffer);
+    @Fluent
+    public SSEConnection event(String eventName, String... data);
+    
+    @Fluent
+    public SSEConnection id(String id, String... data);
 
-    public SSEConnection close(Buffer buffer);
+    @Fluent
+    public SSEConnection close();
+    
+    public boolean rejected();
+    
+    public HttpServerRequest request();
 }

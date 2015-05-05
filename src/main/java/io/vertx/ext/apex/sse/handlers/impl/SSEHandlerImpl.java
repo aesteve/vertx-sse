@@ -1,6 +1,7 @@
 package io.vertx.ext.apex.sse.handlers.impl;
 
 import io.vertx.core.Handler;
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.apex.RoutingContext;
 import io.vertx.ext.apex.sse.SSEConnection;
@@ -21,12 +22,29 @@ public class SSEHandlerImpl implements SSEHandler {
 
     @Override
     public void handle(RoutingContext context) {
+    	HttpServerRequest request = context.request();
         HttpServerResponse response = context.response();
+        response.setChunked(true);
+        SSEConnection connection = SSEConnection.create(context);
+    	String accept = request.getHeader("Accept");
+    	if (accept == null || accept.indexOf("text/event-stream") == -1) {
+    		connection.reject(406, "Not acceptable");
+    		return;
+    	}
+        response.closeHandler(voidz -> {
+        	closeHandlers.forEach(closeHandler -> {
+        		closeHandler.handle(connection);
+        	});
+        });
         response.headers().add("Content-Type", "text/event-stream");
-        SSEConnection connection = SSEConnection.create(context, this);
+        response.headers().add("Cache-Control", "no-cache");
+        response.headers().add("Connection", "keep-alive");
         connectHandlers.forEach(handler -> {
             handler.handle(connection);
         });
+        if (!connection.rejected()) {
+        	response.setStatusCode(200);
+        }
     }
 
     @Override
@@ -39,9 +57,5 @@ public class SSEHandlerImpl implements SSEHandler {
     public SSEHandler closeHandler(Handler<SSEConnection> handler) {
         closeHandlers.add(handler);
         return this;
-    }
-
-    public List<Handler<SSEConnection>> getCloseHandlers() {
-        return closeHandlers;
     }
 }
