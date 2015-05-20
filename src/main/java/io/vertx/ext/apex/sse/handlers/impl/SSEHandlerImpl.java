@@ -22,19 +22,19 @@ public class SSEHandlerImpl implements SSEHandler {
 
     @Override
     public void handle(RoutingContext context) {
-    	HttpServerRequest request = context.request();
+        HttpServerRequest request = context.request();
         HttpServerResponse response = context.response();
         response.setChunked(true);
         SSEConnection connection = SSEConnection.create(context);
-    	String accept = request.getHeader("Accept");
-    	if (accept == null || accept.indexOf("text/event-stream") == -1) {
-    		connection.reject(406, "Not acceptable");
-    		return;
-    	}
+        String accept = request.getHeader("Accept");
+        if (accept == null || accept.indexOf("text/event-stream") == -1) {
+            connection.reject(406, "Not acceptable");
+            return;
+        }
         response.closeHandler(voidz -> {
-        	closeHandlers.forEach(closeHandler -> {
-        		closeHandler.handle(connection);
-        	});
+            closeHandlers.forEach(closeHandler -> {
+                closeHandler.handle(connection);
+            });
         });
         response.headers().add("Content-Type", "text/event-stream");
         response.headers().add("Cache-Control", "no-cache");
@@ -43,7 +43,9 @@ public class SSEHandlerImpl implements SSEHandler {
             handler.handle(connection);
         });
         if (!connection.rejected()) {
-        	response.setStatusCode(200);
+            response.setStatusCode(200);
+            response.setChunked(true);
+            response.write(""); // FIXME : how to trigger the response handler with no data ?
         }
     }
 

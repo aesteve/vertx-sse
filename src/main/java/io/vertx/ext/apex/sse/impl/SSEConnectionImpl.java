@@ -81,13 +81,18 @@ public class SSEConnectionImpl implements SSEConnection {
 
     @Override
     public SSEConnection close() {
-        context.response().close();
+        context.response().end();
         return this;
     }
 
     @Override
     public HttpServerRequest request() {
         return context.request();
+    }
+
+    @Override
+    public String lastId() {
+        return request().getHeader("Last-Event-ID");
     }
 
     @Override

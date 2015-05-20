@@ -54,4 +54,6 @@ public interface SSEConnection {
     public boolean rejected();
 
     public HttpServerRequest request();
+
+    public String lastId();
 }
