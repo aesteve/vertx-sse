@@ -1,10 +1,10 @@
-package io.vertx.ext.apex.sse;
+package io.vertx.ext.web.sse;
 
 import static org.junit.Assert.*;
-import io.vertx.ext.apex.sse.exceptions.ConnectionRefusedException;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import io.vertx.ext.web.sse.exceptions.ConnectionRefusedException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

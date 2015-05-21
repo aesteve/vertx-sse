@@ -1,12 +1,12 @@
-package io.vertx.ext.apex.sse;
+package io.vertx.ext.web.sse;
 
 import java.util.List;
 
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.http.HttpServerRequest;
-import io.vertx.ext.apex.RoutingContext;
-import io.vertx.ext.apex.sse.impl.SSEConnectionImpl;
+import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.sse.impl.SSEConnectionImpl;
 
 @VertxGen
 public interface SSEConnection {

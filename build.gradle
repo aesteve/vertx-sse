@@ -5,7 +5,6 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
     maven { url 'http://oss.sonatype.org/content/repositories/snapshots/' }
 }
@@ -14,7 +13,7 @@ dependencies {
 
     compile 'io.vertx:vertx-core:3.0.0-SNAPSHOT'
 	compile 'io.vertx:vertx-codegen:3.0.0-SNAPSHOT'
-    compile 'io.vertx:vertx-apex:3.0.0-SNAPSHOT'
+    compile 'io.vertx:vertx-web:3.0.0-SNAPSHOT'
     
     testCompile group: 'io.vertx', name: 'vertx-core', version: '3.0.0-SNAPSHOT', classifier: 'tests'
     testCompile 'io.vertx:vertx-unit:3.0.0-SNAPSHOT'

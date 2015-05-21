@@ -1,11 +1,11 @@
-package io.vertx.ext.apex.sse.handlers;
+package io.vertx.ext.web.sse.handlers;
 
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Handler;
-import io.vertx.ext.apex.RoutingContext;
-import io.vertx.ext.apex.sse.SSEConnection;
-import io.vertx.ext.apex.sse.handlers.impl.SSEHandlerImpl;
+import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.sse.SSEConnection;
+import io.vertx.ext.web.sse.handlers.impl.SSEHandlerImpl;
 
 @VertxGen
 public interface SSEHandler extends Handler<RoutingContext> {

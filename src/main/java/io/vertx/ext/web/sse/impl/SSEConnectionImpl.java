@@ -1,11 +1,11 @@
-package io.vertx.ext.apex.sse.impl;
+package io.vertx.ext.web.sse.impl;
 
 import java.util.List;
 
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
-import io.vertx.ext.apex.RoutingContext;
-import io.vertx.ext.apex.sse.SSEConnection;
+import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.sse.SSEConnection;
 
 public class SSEConnectionImpl implements SSEConnection {
 

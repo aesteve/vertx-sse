@@ -1,11 +1,11 @@
-package io.vertx.ext.apex.sse.handlers.impl;
+package io.vertx.ext.web.sse.handlers.impl;
 
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
-import io.vertx.ext.apex.RoutingContext;
-import io.vertx.ext.apex.sse.SSEConnection;
-import io.vertx.ext.apex.sse.handlers.SSEHandler;
+import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.sse.SSEConnection;
+import io.vertx.ext.web.sse.handlers.SSEHandler;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package io.vertx.ext.apex.sse.aync;
+package io.vertx.ext.web.sse.aync;
 
 import io.vertx.core.AsyncResult;
 

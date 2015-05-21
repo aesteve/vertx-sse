@@ -1,4 +1,4 @@
-package io.vertx.ext.apex.sse;
+package io.vertx.ext.web.sse;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
@@ -6,8 +6,9 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
-import io.vertx.ext.apex.Router;
-import io.vertx.ext.apex.sse.handlers.SSEHandler;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.sse.SSEConnection;
+import io.vertx.ext.web.sse.handlers.SSEHandler;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -35,10 +36,10 @@ public class TestVerticle extends AbstractVerticle {
         SSEHandler pingSSEHandler = SSEHandler.create();
         pingSSEHandler.connectHandler(sseConnection -> {
             Long timerId = vertx.setPeriodic(1000, tId -> {
-                sseConnection.data("ping ! "+ new Date().toString());
+                sseConnection.data("ping ! " + new Date().toString());
             });
             timersPerConnection.put(sseConnection, timerId);
-        	//sseConnection.reject(403);
+            // sseConnection.reject(403);
         });
         pingSSEHandler.closeHandler(sseConnection -> {
             Long timerId = timersPerConnection.get(sseConnection);

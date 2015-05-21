@@ -1,4 +1,4 @@
-package io.vertx.ext.apex.sse;
+package io.vertx.ext.web.sse;
 
 import static org.junit.Assert.*;
 import io.vertx.ext.unit.Async;

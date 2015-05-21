@@ -1,4 +1,4 @@
-package io.vertx.ext.apex.sse.impl;
+package io.vertx.ext.web.sse.impl;
 
 import io.vertx.core.buffer.Buffer;
 

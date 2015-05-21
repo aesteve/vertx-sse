@@ -1,11 +1,11 @@
-package io.vertx.ext.apex.sse;
+package io.vertx.ext.web.sse;
 
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClientOptions;
-import io.vertx.ext.apex.sse.impl.EventSourceImpl;
+import io.vertx.ext.web.sse.impl.EventSourceImpl;
 
 public interface EventSource {
 

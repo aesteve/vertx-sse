@@ -1,4 +1,4 @@
-package io.vertx.ext.apex.sse;
+package io.vertx.ext.web.sse;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
@@ -6,8 +6,10 @@ import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerRequest;
-import io.vertx.ext.apex.Router;
-import io.vertx.ext.apex.sse.handlers.SSEHandler;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.sse.EventSource;
+import io.vertx.ext.web.sse.SSEConnection;
+import io.vertx.ext.web.sse.handlers.SSEHandler;
 import io.vertx.ext.unit.TestContext;
 
 import org.junit.After;
