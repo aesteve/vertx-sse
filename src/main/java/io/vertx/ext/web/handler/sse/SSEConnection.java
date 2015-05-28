@@ -19,6 +19,9 @@ public interface SSEConnection {
     public SSEConnection forward(String address);
 
     @Fluent
+    public SSEConnection forward(List<String> addresses);
+
+    @Fluent
     public SSEConnection reject(int code);
 
     @Fluent

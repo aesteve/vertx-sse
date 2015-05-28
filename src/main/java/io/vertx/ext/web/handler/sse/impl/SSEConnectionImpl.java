@@ -1,7 +1,8 @@
 package io.vertx.ext.web.handler.sse.impl;
 
 import io.vertx.core.MultiMap;
-import io.vertx.core.Vertx;
+import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.eventbus.Message;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
@@ -20,21 +21,15 @@ public class SSEConnectionImpl implements SSEConnection {
 
     @Override
     public SSEConnection forward(String address) {
-        Vertx vertx = context.vertx();
-        vertx.eventBus().consumer(address, msg -> {
-            MultiMap headers = msg.headers();
-            String eventName = headers.get("event");
-            String id = headers.get("id");
-            String data = msg.body() == null ? "" : msg.body().toString();
-            if (eventName != null) {
-                this.event(eventName, data);
-            }
-            if (id != null) {
-                this.id(id, data);
-            }
-            if (eventName == null && id == null) {
-                this.data(data);
-            }
+        context.vertx().eventBus().consumer(address, this::ebMsgHandler);
+        return this;
+    }
+
+    @Override
+    public SSEConnection forward(List<String> addresses) {
+        EventBus eb = context.vertx().eventBus();
+        addresses.forEach(address -> {
+            eb.consumer(address, this::ebMsgHandler);
         });
         return this;
     }
@@ -154,5 +149,21 @@ public class SSEConnectionImpl implements SSEConnection {
             context.response().write("data: " + data.get(i) + separator);
         }
         return this;
+    }
+
+    private void ebMsgHandler(Message<?> msg) {
+        MultiMap headers = msg.headers();
+        String eventName = headers.get("event");
+        String id = headers.get("id");
+        String data = msg.body() == null ? "" : msg.body().toString();
+        if (eventName != null) {
+            this.event(eventName, data);
+        }
+        if (id != null) {
+            this.id(id, data);
+        }
+        if (eventName == null && id == null) {
+            this.data(data);
+        }
     }
 }
