@@ -1,10 +1,10 @@
-package io.vertx.ext.web.sse;
+package io.vertx.ext.web.handler.sse;
 
 import static org.junit.Assert.*;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import io.vertx.ext.web.sse.EventSource;
+import io.vertx.ext.web.handler.sse.EventSource;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

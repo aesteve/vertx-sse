@@ -1,4 +1,4 @@
-package io.vertx.ext.web.sse;
+package io.vertx.ext.web.handler.sse;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
@@ -7,9 +7,9 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.sse.EventSource;
-import io.vertx.ext.web.sse.SSEConnection;
-import io.vertx.ext.web.sse.handlers.SSEHandler;
+import io.vertx.ext.web.handler.sse.EventSource;
+import io.vertx.ext.web.handler.sse.SSEConnection;
+import io.vertx.ext.web.handler.sse.SSEHandler;
 import io.vertx.ext.unit.TestContext;
 
 import org.junit.After;
@@ -24,6 +24,7 @@ public class TestBase {
 
     protected Vertx vertx;
     protected SSEConnection connection;
+    protected SSEHandler sseHandler;
 
     private HttpServer server;
     private HttpClientOptions options;
@@ -36,7 +37,7 @@ public class TestBase {
         options.setPort(PORT);
         server = vertx.createHttpServer(options);
         Router router = Router.router(vertx);
-        SSEHandler sseHandler = SSEHandler.create();
+        sseHandler = SSEHandler.create();
         sseHandler.connectHandler(connection -> {
             HttpServerRequest request = connection.request();
             String token = request.getParam("token");
@@ -61,6 +62,7 @@ public class TestBase {
     @After
     public void shutDown(TestContext context) {
         connection = null;
+        sseHandler = null;
         if (vertx != null) {
             vertx.close(context.asyncAssertSuccess()); // will shut down the server
         }

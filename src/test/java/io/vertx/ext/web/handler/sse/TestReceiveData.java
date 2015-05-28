@@ -1,4 +1,4 @@
-package io.vertx.ext.web.sse;
+package io.vertx.ext.web.handler.sse;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -8,7 +8,7 @@ import static org.junit.Assert.assertTrue;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import io.vertx.ext.web.sse.EventSource;
+import io.vertx.ext.web.handler.sse.EventSource;
 
 import java.util.ArrayList;
 import java.util.List;

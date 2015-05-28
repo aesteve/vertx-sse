@@ -1,4 +1,4 @@
-package io.vertx.ext.web.sse.aync;
+package io.vertx.ext.web.handler.sse.aync;
 
 import io.vertx.core.AsyncResult;
 

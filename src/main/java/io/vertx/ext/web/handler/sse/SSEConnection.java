@@ -1,4 +1,4 @@
-package io.vertx.ext.web.sse;
+package io.vertx.ext.web.handler.sse;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.sse.impl.SSEConnectionImpl;
+import io.vertx.ext.web.handler.sse.impl.SSEConnectionImpl;
 
 @VertxGen
 public interface SSEConnection {
@@ -14,6 +14,9 @@ public interface SSEConnection {
     static SSEConnection create(RoutingContext context) {
         return new SSEConnectionImpl(context);
     }
+
+    @Fluent
+    public SSEConnection forward(String address);
 
     @Fluent
     public SSEConnection reject(int code);

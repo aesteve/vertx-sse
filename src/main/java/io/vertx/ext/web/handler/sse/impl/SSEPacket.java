@@ -1,4 +1,4 @@
-package io.vertx.ext.web.sse.impl;
+package io.vertx.ext.web.handler.sse.impl;
 
 import io.vertx.core.buffer.Buffer;
 

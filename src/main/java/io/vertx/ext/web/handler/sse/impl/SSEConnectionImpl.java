@@ -1,11 +1,13 @@
-package io.vertx.ext.web.sse.impl;
+package io.vertx.ext.web.handler.sse.impl;
 
-import java.util.List;
-
+import io.vertx.core.MultiMap;
+import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.sse.SSEConnection;
+import io.vertx.ext.web.handler.sse.SSEConnection;
+
+import java.util.List;
 
 public class SSEConnectionImpl implements SSEConnection {
 
@@ -14,6 +16,27 @@ public class SSEConnectionImpl implements SSEConnection {
 
     public SSEConnectionImpl(RoutingContext context) {
         this.context = context;
+    }
+
+    @Override
+    public SSEConnection forward(String address) {
+        Vertx vertx = context.vertx();
+        vertx.eventBus().consumer(address, msg -> {
+            MultiMap headers = msg.headers();
+            String eventName = headers.get("event");
+            String id = headers.get("id");
+            String data = msg.body() == null ? "" : msg.body().toString();
+            if (eventName != null) {
+                this.event(eventName, data);
+            }
+            if (id != null) {
+                this.id(id, data);
+            }
+            if (eventName == null && id == null) {
+                this.data(data);
+            }
+        });
+        return this;
     }
 
     @Override

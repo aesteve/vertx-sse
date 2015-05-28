@@ -1,4 +1,4 @@
-package io.vertx.ext.web.sse.exceptions;
+package io.vertx.ext.web.handler.sse.exceptions;
 
 import io.vertx.core.http.HttpClientResponse;
 

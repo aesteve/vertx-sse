@@ -1,4 +1,4 @@
-package io.vertx.ext.web.sse.impl;
+package io.vertx.ext.web.handler.sse.impl;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -8,9 +8,9 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientRequest;
-import io.vertx.ext.web.sse.EventSource;
-import io.vertx.ext.web.sse.aync.SSEAsyncResult;
-import io.vertx.ext.web.sse.exceptions.ConnectionRefusedException;
+import io.vertx.ext.web.handler.sse.EventSource;
+import io.vertx.ext.web.handler.sse.aync.SSEAsyncResult;
+import io.vertx.ext.web.handler.sse.exceptions.ConnectionRefusedException;
 
 import java.util.HashMap;
 import java.util.Map;

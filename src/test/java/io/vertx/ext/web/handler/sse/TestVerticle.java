@@ -1,4 +1,4 @@
-package io.vertx.ext.web.sse;
+package io.vertx.ext.web.handler.sse;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
@@ -7,8 +7,8 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.sse.SSEConnection;
-import io.vertx.ext.web.sse.handlers.SSEHandler;
+import io.vertx.ext.web.handler.sse.SSEConnection;
+import io.vertx.ext.web.handler.sse.SSEHandler;
 
 import java.util.Date;
 import java.util.HashMap;
