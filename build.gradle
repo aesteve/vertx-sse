@@ -6,17 +6,16 @@ plugins {
 
 repositories {
     mavenCentral()
-    maven { url 'http://oss.sonatype.org/content/repositories/snapshots/' }
 }
 
 dependencies {
 
-    compile 'io.vertx:vertx-core:3.0.0-SNAPSHOT'
-	compile 'io.vertx:vertx-codegen:3.0.0-SNAPSHOT'
-    compile 'io.vertx:vertx-web:3.0.0-SNAPSHOT'
+    compile 'io.vertx:vertx-core:3.0.0'
+	compile 'io.vertx:vertx-codegen:3.0.0'
+    compile 'io.vertx:vertx-web:3.0.0'
     
-    testCompile group: 'io.vertx', name: 'vertx-core', version: '3.0.0-SNAPSHOT', classifier: 'tests'
-    testCompile 'io.vertx:vertx-unit:3.0.0-SNAPSHOT'
+    testCompile group: 'io.vertx', name: 'vertx-core', version: '3.0.0', classifier: 'tests'
+    testCompile 'io.vertx:vertx-unit:3.0.0'
     testCompile 'junit:junit:4.12'
     
 }
@@ -26,5 +25,5 @@ if (!JavaVersion.current().java8Compatible) {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.3'
+    gradleVersion = '2.4'
 }
