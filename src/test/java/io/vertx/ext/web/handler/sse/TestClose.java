@@ -1,11 +1,8 @@
 package io.vertx.ext.web.handler.sse;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -14,29 +11,26 @@ public class TestClose extends TestBase {
 
 	@Test
 	public void closeHandlerOnServer(TestContext context) {
-		Async async = context.async();
-		EventSource eventSource = eventSource();
+		final Async async = context.async();
+		final EventSource eventSource = eventSource();
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			assertNotNull(connection);
+			context.assertNotNull(connection);
 			eventSource.close(); /* closed by client */
 			try {
 				Thread.sleep(100); /* we have to, since it happens on the server */
-			} catch (InterruptedException ie) {
-			}
-			assertNull(connection);
+			} catch (InterruptedException ie) {}
+			context.assertNull(connection);
 			async.complete();
 		});
 	}
 
 	@Test
 	public void closeHandlerOnClient(TestContext context) {
-		Async async = context.async();
-		EventSource eventSource = eventSource();
-		eventSource.onClose(handler -> {
-			async.complete();
-		});
+		final Async async = context.async();
+		final EventSource eventSource = eventSource();
+		eventSource.onClose(handler -> async.complete());
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			assertNotNull(connection);
+			context.assertNotNull(connection);
 			connection.close();
 		});
 	}

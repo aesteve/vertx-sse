@@ -21,17 +21,17 @@ public class EventSourceImpl implements EventSource {
 	private boolean connected;
 	private String lastId;
 	private Handler<String> messageHandler;
-	private Map<String, Handler<String>> eventHandlers;
+	private final Map<String, Handler<String>> eventHandlers;
 	private SSEPacket currentPacket;
-	private Vertx vertx;
-	private HttpClientOptions options;
+	private final Vertx vertx;
+	private final HttpClientOptions options;
 	private Handler<Void> closeHandler;
 
 	public EventSourceImpl(Vertx vertx, HttpClientOptions options) {
 		options.setKeepAlive(true);
 		this.vertx = vertx;
 		this.options = options;
-		eventHandlers = new HashMap<String, Handler<String>>();
+		eventHandlers = new HashMap<>();
 	}
 
 	@Override
@@ -50,14 +50,14 @@ public class EventSourceImpl implements EventSource {
 		HttpClientRequest request = client.get(path, response -> {
 			if (response.statusCode() != 200) {
 				ConnectionRefusedException ex = new ConnectionRefusedException(response);
-				handler.handle(new SSEAsyncResult<Void>(ex));
+				handler.handle(new SSEAsyncResult<>(ex));
 			} else {
 				connected = true;
 				response.handler(this::handleMessage);
 				if (closeHandler != null) {
 					response.endHandler(closeHandler);
 				}
-				handler.handle(new SSEAsyncResult<Void>(null, null));
+				handler.handle(new SSEAsyncResult<>(null, null));
 			}
 		});
 		if (lastEventId != null) {

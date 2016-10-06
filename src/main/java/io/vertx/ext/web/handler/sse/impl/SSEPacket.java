@@ -4,7 +4,12 @@ import io.vertx.core.buffer.Buffer;
 
 class SSEPacket {
 
-	private StringBuilder payload;
+	/* Use constants, but hope this will never change in the future (it should'nt) */
+	private final static String END_OF_PACKET = "\n\n";
+	private final static String LINE_SEPARATOR = "\n";
+	private final static String FIELD_SEPARATOR = ":";
+
+	private final StringBuilder payload;
 	String headerName;
 	String headerValue;
 
@@ -14,21 +19,21 @@ class SSEPacket {
 
 	boolean append(Buffer buffer) {
 		String response = buffer.toString();
-		boolean willTerminate = response.endsWith("\n\n");
-		String[] lines = response.split("\n");
+		boolean willTerminate = response.endsWith(END_OF_PACKET);
+		String[] lines = response.split(LINE_SEPARATOR);
 		for (int i = 0; i < lines.length; i++) {
-			String line = lines[i];
-			int idx = line.indexOf(":");
+			final String line = lines[i];
+			int idx = line.indexOf(FIELD_SEPARATOR);
 			if (idx == -1) {
 				continue; // ignore line
 			}
-			String type = line.substring(0, idx);
-			String data = line.substring(idx + 2, line.length());
-			if (i == 0 && headerName == null && !type.equals("data")) {
+			final String type = line.substring(0, idx);
+			final String data = line.substring(idx + 2, line.length());
+			if (i == 0 && headerName == null && !"data".equals(type)) {
 				headerName = type;
 				headerValue = data;
 			} else {
-				payload.append(data + "\n");
+				payload.append(data).append(LINE_SEPARATOR);
 			}
 		}
 		return willTerminate;

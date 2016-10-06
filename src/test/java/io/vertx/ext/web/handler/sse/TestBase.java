@@ -36,8 +36,8 @@ public class TestBase {
 		Router router = Router.router(vertx);
 		sseHandler = SSEHandler.create();
 		sseHandler.connectHandler(connection -> {
-			HttpServerRequest request = connection.request();
-			String token = request.getParam("token");
+			final HttpServerRequest request = connection.request();
+			final String token = request.getParam("token");
 			if (token == null) {
 				connection.reject(401);
 			} else if (!TOKEN.equals(token)) {

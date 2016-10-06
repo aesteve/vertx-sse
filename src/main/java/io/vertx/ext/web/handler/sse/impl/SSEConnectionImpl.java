@@ -12,7 +12,7 @@ import java.util.List;
 
 public class SSEConnectionImpl implements SSEConnection {
 
-	private RoutingContext context;
+	private final RoutingContext context;
 	private boolean rejected;
 
 	public SSEConnectionImpl(RoutingContext context) {
@@ -28,9 +28,7 @@ public class SSEConnectionImpl implements SSEConnection {
 	@Override
 	public SSEConnection forward(List<String> addresses) {
 		EventBus eb = context.vertx().eventBus();
-		addresses.forEach(address -> {
-			eb.consumer(address, this::ebMsgHandler);
-		});
+		addresses.forEach(address -> eb.consumer(address, this::ebMsgHandler));
 		return this;
 	}
 

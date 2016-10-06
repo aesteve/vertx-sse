@@ -12,12 +12,12 @@ import java.util.List;
 
 public class SSEHandlerImpl implements SSEHandler {
 
-	private List<Handler<SSEConnection>> connectHandlers;
-	private List<Handler<SSEConnection>> closeHandlers;
+	private final List<Handler<SSEConnection>> connectHandlers;
+	private final List<Handler<SSEConnection>> closeHandlers;
 
 	public SSEHandlerImpl() {
-		connectHandlers = new ArrayList<Handler<SSEConnection>>();
-		closeHandlers = new ArrayList<Handler<SSEConnection>>();
+		connectHandlers = new ArrayList<>();
+		closeHandlers = new ArrayList<>();
 	}
 
 	@Override
@@ -27,21 +27,15 @@ public class SSEHandlerImpl implements SSEHandler {
 		response.setChunked(true);
 		SSEConnection connection = SSEConnection.create(context);
 		String accept = request.getHeader("Accept");
-		if (accept == null || accept.indexOf("text/event-stream") == -1) {
+		if (accept == null || !accept.contains("text/event-stream")) {
 			connection.reject(406, "Not acceptable");
 			return;
 		}
-		response.closeHandler(voidz -> {
-			closeHandlers.forEach(closeHandler -> {
-				closeHandler.handle(connection);
-			});
-		});
+		response.closeHandler(aVoid -> closeHandlers.forEach(closeHandler -> closeHandler.handle(connection)));
 		response.headers().add("Content-Type", "text/event-stream");
 		response.headers().add("Cache-Control", "no-cache");
 		response.headers().add("Connection", "keep-alive");
-		connectHandlers.forEach(handler -> {
-			handler.handle(connection);
-		});
+		connectHandlers.forEach(handler -> handler.handle(connection));
 		if (!connection.rejected()) {
 			response.setStatusCode(200);
 			response.setChunked(true);

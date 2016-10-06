@@ -6,7 +6,7 @@ public class ConnectionRefusedException extends Exception {
 
 	private static final long serialVersionUID = -6440236022622195797L;
 
-	private HttpClientResponse response;
+	private final HttpClientResponse response;
 
 	public ConnectionRefusedException(HttpClientResponse response) {
 		super(response.statusMessage());

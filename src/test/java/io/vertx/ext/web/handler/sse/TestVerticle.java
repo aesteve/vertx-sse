@@ -12,60 +12,62 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Utility class to test stuff in the browser
+ */
 public class TestVerticle extends AbstractVerticle {
 
 	public static final Integer PORT = 9000;
 	public static final String HOST = "localhost";
 	private Map<SSEConnection, Long> timersPerConnection;
+	private HttpServer server;
 
 	@Override
 	public void init(Vertx vertx, Context context) {
 		super.init(vertx, context);
-		timersPerConnection = new HashMap<SSEConnection, Long>();
+		timersPerConnection = new HashMap<>();
 	}
 
 	@Override
 	public void start(Future<Void> future) {
-		HttpServer server = vertx.createHttpServer(serverOptions());
-		Router router = Router.router(vertx);
+		server = vertx.createHttpServer(serverOptions());
+		final Router router = Router.router(vertx);
 		router.get("/index").handler(context -> {
 			context.response().sendFile("src/test/resources/index.html");
 		}); // for integration tests in the browser
-		SSEHandler pingSSEHandler = SSEHandler.create();
+		final SSEHandler pingSSEHandler = SSEHandler.create();
 		pingSSEHandler.connectHandler(sseConnection -> {
-			Long timerId = vertx.setPeriodic(1000, tId -> {
+			final Long timerId = vertx.setPeriodic(1000, tId -> {
 				sseConnection.data("ping ! " + new Date().toString());
 			});
 			timersPerConnection.put(sseConnection, timerId);
 			// sseConnection.reject(403);
 		});
 		pingSSEHandler.closeHandler(sseConnection -> {
-			Long timerId = timersPerConnection.get(sseConnection);
+			final Long timerId = timersPerConnection.get(sseConnection);
 			if (timerId != null) {
 				vertx.cancelTimer(timerId);
 			}
 		});
 		router.route("/sse").handler(pingSSEHandler);
 		server.requestHandler(router::accept);
-		server.listen(result -> {
-			if (result.succeeded()) {
-				future.complete();
-			} else {
-				future.fail(result.cause());
-			}
-		});
+		server.listen(future.<HttpServer>map(s -> null).completer());
 	}
 
 	@Override
 	public void stop(Future<Void> future) {
-		future.complete();
+		server.close(future.completer());
 	}
 
 	private HttpServerOptions serverOptions() {
-		HttpServerOptions options = new HttpServerOptions();
+		final HttpServerOptions options = new HttpServerOptions();
 		options.setHost(HOST);
 		options.setPort(PORT);
 		return options;
+	}
+
+	public static void main(String... args) {
+		Vertx.vertx().deployVerticle(TestVerticle.class.getName());
 	}
 
 }

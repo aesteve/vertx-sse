@@ -23,9 +23,7 @@ public class TestEventBusForwarder extends TestBase {
 
 	@Before
 	public void registerEbForwarder(TestContext context) {
-		sseHandler.connectHandler(connection -> {
-			connection.forward(EB_ADDR);
-		});
+		sseHandler.connectHandler(connection -> connection.forward(EB_ADDR));
 		msg = new JsonObject();
 		msg.put("quote", "Happiness is a warm puppy");
 		msg.put("author", "Charles M. Schulz");
@@ -33,36 +31,36 @@ public class TestEventBusForwarder extends TestBase {
 
 	@Test
 	public void forwardData(TestContext context) {
-		Async async = context.async();
-		EventSource eventSource = eventSource();
+		final Async async = context.async();
+		final EventSource eventSource = eventSource();
 		eventSource.onMessage(message -> {
-			assertNotNull(message);
-			assertEquals(msg, new JsonObject(message));
+			context.assertNotNull(message);
+			context.assertEquals(msg, new JsonObject(message));
 			async.complete();
 		});
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			assertTrue(handler.succeeded());
-			assertFalse(handler.failed());
-			assertNull(handler.cause());
+			context.assertTrue(handler.succeeded());
+			context.assertFalse(handler.failed());
+			context.assertNull(handler.cause());
 			vertx.eventBus().publish(EB_ADDR, msg);
 		});
 	}
 
 	@Test
 	public void forwardEvent(TestContext context) {
-		Async async = context.async();
-		EventSource eventSource = eventSource();
-		String eventName = "someQuote";
+		final Async async = context.async();
+		final EventSource eventSource = eventSource();
+		final String eventName = "someQuote";
 		eventSource.onEvent(eventName, message -> {
-			assertNotNull(message);
-			assertEquals(msg, new JsonObject(message));
+			context.assertNotNull(message);
+			context.assertEquals(msg, new JsonObject(message));
 			async.complete();
 		});
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			assertTrue(handler.succeeded());
-			assertFalse(handler.failed());
-			assertNull(handler.cause());
-			DeliveryOptions options = new DeliveryOptions();
+			context.assertTrue(handler.succeeded());
+			context.assertFalse(handler.failed());
+			context.assertNull(handler.cause());
+			final DeliveryOptions options = new DeliveryOptions();
 			options.addHeader("event", eventName);
 			vertx.eventBus().publish(EB_ADDR, msg, options);
 		});
@@ -70,20 +68,20 @@ public class TestEventBusForwarder extends TestBase {
 
 	@Test
 	public void forwardId(TestContext context) {
-		Async async = context.async();
-		EventSource eventSource = eventSource();
-		String id = "someQuote";
+		final Async async = context.async();
+		final EventSource eventSource = eventSource();
+		final String id = "someQuote";
 		eventSource.onMessage(message -> {
-			assertNotNull(message);
-			assertEquals(msg, new JsonObject(message));
-			assertEquals(id, eventSource.lastId());
+			context.assertNotNull(message);
+			context.assertEquals(msg, new JsonObject(message));
+			context.assertEquals(id, eventSource.lastId());
 			async.complete();
 		});
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			assertTrue(handler.succeeded());
-			assertFalse(handler.failed());
-			assertNull(handler.cause());
-			DeliveryOptions options = new DeliveryOptions();
+			context.assertTrue(handler.succeeded());
+			context.assertFalse(handler.failed());
+			context.assertNull(handler.cause());
+			final DeliveryOptions options = new DeliveryOptions();
 			options.addHeader("id", id);
 			vertx.eventBus().publish(EB_ADDR, msg, options);
 		});

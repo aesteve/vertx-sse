@@ -1,6 +1,7 @@
 package io.vertx.ext.web.handler.sse;
 
 import io.vertx.codegen.annotations.Fluent;
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
@@ -16,50 +17,52 @@ public interface SSEConnection {
 	}
 
 	@Fluent
-	public SSEConnection forward(String address);
+	SSEConnection forward(String address);
 
 	@Fluent
-	public SSEConnection forward(List<String> addresses);
+	SSEConnection forward(List<String> addresses);
 
 	@Fluent
-	public SSEConnection reject(int code);
+	SSEConnection reject(int code);
 
 	@Fluent
-	public SSEConnection reject(int code, String reason);
+	SSEConnection reject(int code, String reason);
 
 	@Fluent
-	public SSEConnection comment(String comment);
+	SSEConnection comment(String comment);
 
 	@Fluent
-	public SSEConnection retry(Long delay, List<String> data);
+	SSEConnection retry(Long delay, List<String> data);
 
 	@Fluent
-	public SSEConnection retry(Long delay, String data);
+	SSEConnection retry(Long delay, String data);
 
 	@Fluent
-	public SSEConnection data(List<String> data);
+	SSEConnection data(List<String> data);
 
 	@Fluent
-	public SSEConnection data(String data);
+	SSEConnection data(String data);
 
 	@Fluent
-	public SSEConnection event(String eventName, List<String> data);
+	SSEConnection event(String eventName, List<String> data);
 
 	@Fluent
-	public SSEConnection event(String eventName, String data);
+	SSEConnection event(String eventName, String data);
 
 	@Fluent
-	public SSEConnection id(String id, List<String> data);
+	SSEConnection id(String id, List<String> data);
 
 	@Fluent
-	public SSEConnection id(String id, String data);
+	SSEConnection id(String id, String data);
 
 	@Fluent
-	public SSEConnection close();
+	SSEConnection close();
 
-	public boolean rejected();
+	boolean rejected();
 
-	public HttpServerRequest request();
+	String lastId();
 
-	public String lastId();
+	@GenIgnore
+	HttpServerRequest request();
+
 }

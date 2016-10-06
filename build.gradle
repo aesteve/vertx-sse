@@ -1,23 +1,21 @@
 plugins {
     id 'java'
-    id 'eclipse'
-    id 'idea'
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
 dependencies {
 
-    compile 'io.vertx:vertx-core:3.0.0'
-	compile 'io.vertx:vertx-codegen:3.0.0'
-    compile 'io.vertx:vertx-web:3.0.0'
-    
-    testCompile group: 'io.vertx', name: 'vertx-core', version: '3.0.0', classifier: 'tests'
-    testCompile 'io.vertx:vertx-unit:3.0.0'
+    compile "io.vertx:vertx-core:$vertxVersion"
+	compile "io.vertx:vertx-codegen:$vertxVersion"
+    compile "io.vertx:vertx-web:$vertxVersion"
+
+    testCompile "io.vertx:vertx-unit:$vertxVersion"
     testCompile 'junit:junit:4.12'
-    
+
 }
 
 if (!JavaVersion.current().java8Compatible) {
@@ -25,5 +23,5 @@ if (!JavaVersion.current().java8Compatible) {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.4'
+    gradleVersion = '3.1'
 }
