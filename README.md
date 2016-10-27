@@ -2,7 +2,7 @@
 
 Add Server-Sent-Events support to Vert.x by providing a vertx-web handler that deals with all the stuff required for server-sent-events.
 
-Will be integrated into vertx-web as soon as Vert.x 3.0 release is out.
+Currently trying to integrate into vertx-web. If you have some time to help, just contact me, thanks.
 
 ## Server-side
 
