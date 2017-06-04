@@ -1,6 +1,10 @@
-plugins {
-    id 'java'
-}
+group 'com.github.aesteve'
+version '0.1'
+
+apply plugin: 'java'
+apply plugin: 'jacoco'
+
+sourceCompatibility = 1.8
 
 repositories {
     mavenLocal()
@@ -16,10 +20,6 @@ dependencies {
     testCompile "io.vertx:vertx-unit:$vertxVersion"
     testCompile 'junit:junit:4.12'
 
-}
-
-if (!JavaVersion.current().java8Compatible) {
-    throw new IllegalStateException("This needs Java 8. You are using ${JavaVersion.current()}.")
 }
 
 task wrapper(type: Wrapper) {
