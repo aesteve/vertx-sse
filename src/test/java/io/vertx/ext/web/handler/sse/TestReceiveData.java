@@ -90,14 +90,14 @@ public class TestReceiveData extends TestBase {
 				final StringJoiner joiner = new StringJoiner("\n");
 				quotes.forEach(joiner::add);
 				context.assertEquals(joiner.toString() + "\n", msg);
-				context.assertEquals("Client last id is OK", id, eventSource.lastId());
+				context.assertEquals(id, eventSource.lastId());
 				eventSource.close();
 				eventSource.connect("/sse?token=" + TOKEN, eventSource.lastId(), secondHandler -> {
 					context.assertTrue(handler.succeeded());
 					context.assertFalse(handler.failed());
 					context.assertNull(handler.cause());
 					context.assertNotNull(connection);
-					context.assertEquals("Server last id is OK", id, connection.lastId());
+					context.assertEquals(id, connection.lastId());
 					async.complete();
 				});
 			});
