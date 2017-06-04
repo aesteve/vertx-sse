@@ -1,3 +1,6 @@
+[![Travis](https://img.shields.io/travis/aesteve/vertx-sse.svg)](https://travis-ci.org/aesteve/vertx-sse)
+[![Codecov](https://img.shields.io/codecov/c/github/aesteve/vertx-sse.svg)](https://codecov.io/gh/aesteve/vertx-sse)
+
 # vertx-sse
 
 Add Server-Sent-Events support to Vert.x by providing a vertx-web handler that deals with all the stuff required for server-sent-events.
