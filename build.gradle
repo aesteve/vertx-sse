@@ -22,6 +22,14 @@ dependencies {
 
 }
 
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.destination "${buildDir}/jacocoHtml"
+    }
+}
+
 task wrapper(type: Wrapper) {
     gradleVersion = '3.5'
 }
