@@ -1,15 +1,11 @@
 package io.vertx.ext.web.handler.sse.impl;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxException;
+import io.vertx.core.*;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.ext.web.handler.sse.EventSource;
-import io.vertx.ext.web.handler.sse.aync.SSEAsyncResult;
 import io.vertx.ext.web.handler.sse.exceptions.ConnectionRefusedException;
 
 import java.util.HashMap;
@@ -50,14 +46,14 @@ public class EventSourceImpl implements EventSource {
 		HttpClientRequest request = client.get(path, response -> {
 			if (response.statusCode() != 200) {
 				ConnectionRefusedException ex = new ConnectionRefusedException(response);
-				handler.handle(new SSEAsyncResult<>(ex));
+				handler.handle(Future.failedFuture(ex));
 			} else {
 				connected = true;
 				response.handler(this::handleMessage);
 				if (closeHandler != null) {
 					response.endHandler(closeHandler);
 				}
-				handler.handle(new SSEAsyncResult<>(null, null));
+				handler.handle(Future.succeededFuture());
 			}
 		});
 		if (lastEventId != null) {
