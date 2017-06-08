@@ -31,7 +31,10 @@ public class SSEHandlerImpl implements SSEHandler {
 			connection.reject(406, "Not acceptable");
 			return;
 		}
-		response.closeHandler(aVoid -> closeHandlers.forEach(closeHandler -> closeHandler.handle(connection)));
+		response.closeHandler(aVoid -> {
+			closeHandlers.forEach(closeHandler -> closeHandler.handle(connection));
+			connection.close();
+		});
 		response.headers().add("Content-Type", "text/event-stream");
 		response.headers().add("Cache-Control", "no-cache");
 		response.headers().add("Connection", "keep-alive");

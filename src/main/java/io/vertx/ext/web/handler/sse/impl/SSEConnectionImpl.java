@@ -1,19 +1,24 @@
 package io.vertx.ext.web.handler.sse.impl;
 
 import io.vertx.core.MultiMap;
-import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.VertxException;
 import io.vertx.core.eventbus.Message;
+import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.sse.SSEConnection;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 public class SSEConnectionImpl implements SSEConnection {
 
 	private final RoutingContext context;
 	private boolean rejected;
+	private List<MessageConsumer> consumers = new ArrayList<>();
 
 	public SSEConnectionImpl(RoutingContext context) {
 		this.context = context;
@@ -21,14 +26,15 @@ public class SSEConnectionImpl implements SSEConnection {
 
 	@Override
 	public SSEConnection forward(String address) {
-		context.vertx().eventBus().consumer(address, this::ebMsgHandler);
+		consumers.add(context.vertx().eventBus().consumer(address, this::ebMsgHandler));
 		return this;
 	}
 
 	@Override
 	public SSEConnection forward(List<String> addresses) {
-		EventBus eb = context.vertx().eventBus();
-		addresses.forEach(address -> eb.consumer(address, this::ebMsgHandler));
+		consumers = addresses.stream().map(address ->
+			context.vertx().eventBus().consumer(address, this::ebMsgHandler)
+		).collect(toList());
 		return this;
 	}
 
@@ -97,7 +103,12 @@ public class SSEConnectionImpl implements SSEConnection {
 
 	@Override
 	public SSEConnection close() {
-		context.response().end();
+		try {
+			context.response().end(); // best effort
+		} catch(VertxException ve) {} // connection has already been closed by the browser
+		if (!consumers.isEmpty()) {
+			consumers.forEach(MessageConsumer::unregister);
+		}
 		return this;
 	}
 
@@ -139,8 +150,8 @@ public class SSEConnectionImpl implements SSEConnection {
 	}
 
 	private SSEConnection appendData(List<String> data) {
+		String separator = "\n";
 		for (int i = 0; i < data.size(); i++) {
-			String separator = "\n";
 			if (i == data.size() - 1) {
 				separator += "\n";
 			}
