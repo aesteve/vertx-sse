@@ -52,6 +52,7 @@ public class TestBase {
 			}
 		});
 		router.get("/sse").handler(sseHandler);
+		addBridge(router);
 		server.requestHandler(router::accept);
 		server.listen(context.asyncAssertSuccess());
 	}
@@ -64,6 +65,8 @@ public class TestBase {
 			vertx.close(context.asyncAssertSuccess()); // will shut down the server
 		}
 	}
+
+	protected void addBridge(Router router) {}
 
 	protected EventSource eventSource() {
 		return EventSource.create(vertx, clientOptions());
@@ -81,4 +84,5 @@ public class TestBase {
 		}
 		return options;
 	}
+
 }
