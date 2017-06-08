@@ -27,13 +27,12 @@ public class ISSVerticle extends AbstractVerticle {
     private SSEHandler sse = SSEHandler.create();
     private Long timerId;
     private HttpClient client;
-    private ProxyOptions proxy = new ProxyOptions().setHost("gateway.zscaler.net").setPort(80);
 
 
     @Override
     public void init(Vertx vertx, Context context) {
         super.init(vertx, context);
-        client = vertx.createHttpClient(new HttpClientOptions().setDefaultHost("api.open-notify.org").setProxyOptions(proxy));
+        client = vertx.createHttpClient(new HttpClientOptions().setDefaultHost("api.open-notify.org"));
     }
 
     @Override
@@ -44,7 +43,7 @@ public class ISSVerticle extends AbstractVerticle {
         router.get("/static/*").handler(staticFiles);
 
         sse.connectHandler(connection -> {
-            connection.forward("iss-position");
+            connection.forward(EB_ADDRESS);
         });
         router.get("/iss/position").handler(sse);
 
