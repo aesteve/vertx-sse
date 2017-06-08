@@ -1,0 +1,11 @@
+.git
+bin
+build
+target
+.gradle
+.settings
+.classpath
+.vertx
+.project
+.idea
+*.iml

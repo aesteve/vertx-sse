@@ -1,0 +1,3 @@
+include 'examples:iss-position'
+findProject(':examples:iss-position')?.name = 'iss-position'
+
