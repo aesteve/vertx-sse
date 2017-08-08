@@ -63,12 +63,12 @@ public class SSEConnectionImpl implements SSEConnection {
 
 	@Override
 	public SSEConnection retry(Long delay, List<String> data) {
-		return withHeader("delay", delay.toString(), data);
+		return withHeader("retry", delay.toString(), data);
 	}
 
 	@Override
 	public SSEConnection retry(Long delay, String data) {
-		return withHeader("delay", delay.toString(), data);
+		return withHeader("retry", delay.toString(), data);
 	}
 
 	@Override
