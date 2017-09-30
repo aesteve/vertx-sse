@@ -42,7 +42,7 @@ yourRouter.get("/sse").handler(sse);
 ```java
 SSEHandler pingSSE = SSEHandler.create();
 Map<SSEConnection, Long> timersPerConnection = new HashMap<SSEConnection, Long>();
-pingSSE.connectHandler(sseConnnection -> {
+pingSSE.connectHandler(sseConnection -> {
   Long timerId = vertx.setPeriodic(1000, tId -> {
       sseConnection.data("ping ! "+ new Date().getTime());
   });
