@@ -27,7 +27,7 @@ public class SSEHandlerImpl implements SSEHandler {
 		response.setChunked(true);
 		SSEConnection connection = SSEConnection.create(context);
 		String accept = request.getHeader("Accept");
-		if (accept == null || !accept.contains("text/event-stream")) {
+		if (accept != null && !accept.contains("text/event-stream")) {
 			connection.reject(406, "Not acceptable");
 			return;
 		}

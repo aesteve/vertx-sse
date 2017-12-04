@@ -10,10 +10,21 @@ import org.junit.runner.RunWith;
 public class TestRequestResponseHeaders extends TestBase {
 
 	@Test
+	public void noHeaderTextEventStreamHttpRequest(TestContext context) {
+		final Async async = context.async();
+		client().get("/sse", response -> {
+			context.assertEquals(406, response.statusCode());
+			async.complete();
+		}).putHeader("Accept", "foo").end();
+	}
+
+	@Test
 	public void noHeaderHttpRequest(TestContext context) {
 		final Async async = context.async();
 		client().getNow("/sse", response -> {
-			context.assertEquals(406, response.statusCode());
+			context.assertEquals("text/event-stream", response.getHeader("Content-Type"));
+			context.assertEquals("no-cache", response.getHeader("Cache-Control"));
+			context.assertEquals("keep-alive", response.getHeader("Connection"));
 			async.complete();
 		});
 	}
