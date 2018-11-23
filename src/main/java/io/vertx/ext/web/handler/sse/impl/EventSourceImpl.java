@@ -107,22 +107,23 @@ public class EventSourceImpl implements EventSource {
 			String header = currentPacket.headerName;
 			if (header == null) {
 				messageHandler.handle(currentPacket.toString());
-				return;
+			} else {
+				switch (currentPacket.headerName) {
+					case "event":
+						handler = eventHandlers.get(currentPacket.headerValue);
+						break;
+					case "id":
+						handler = messageHandler;
+						lastId = currentPacket.headerValue;
+						break;
+					case "retry":
+						// FIXME : we should automatically handle this ?
+				}
+				if (handler != null) {
+					handler.handle(currentPacket.toString());
+				}
 			}
-			switch (currentPacket.headerName) {
-				case "event":
-					handler = eventHandlers.get(currentPacket.headerValue);
-					break;
-				case "id":
-					handler = messageHandler;
-					lastId = currentPacket.headerValue;
-					break;
-				case "retry":
-					// FIXME : we should automatically handle this ?
-			}
-			if (handler != null) {
-				handler.handle(currentPacket.toString());
-			}
+			currentPacket = null;
 		}
 	}
 }
