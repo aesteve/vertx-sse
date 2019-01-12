@@ -9,6 +9,7 @@ plugins {
     java
     jacoco
     maven
+    id("org.sonarqube") version("2.6")
 }
 
 tasks.withType<JavaCompile> {
