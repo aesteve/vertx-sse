@@ -1,16 +1,14 @@
 package io.vertx.ext.web.handler.sse;
 
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.ext.web.Router;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import io.vertx.junit5.VertxTestContext;
+import org.junit.jupiter.api.Test;
 
-@RunWith(VertxUnitRunner.class)
-public class TestEventBusBridgeNoMapping extends TestBase {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+class TestEventBusBridgeNoMapping extends TestBase {
 
 	private final static String EB_ADDR = "testAddress";
 	private JsonObject msg;
@@ -21,16 +19,15 @@ public class TestEventBusBridgeNoMapping extends TestBase {
 	}
 
 	@Test
-	public void testBridge(TestContext ctx) {
-		Async async = ctx.async();
+	void testBridge(VertxTestContext ctx) {
 		final String address = "/bridge/address";
 		final String message = "sent over the event bus";
 		eventSource().connect(address, res -> {
-			ctx.assertFalse(res.failed());
+			assertFalse(res.failed());
 			vertx.eventBus().publish(address, message);
 		}).onMessage(msg -> {
-			ctx.assertEquals(message + "\n", msg);
-			async.complete();
+			assertEquals(message + "\n", msg);
+			ctx.completeNow();
 		});
 	}
 

@@ -1,13 +1,12 @@
 package io.vertx.ext.web.handler.sse;
 
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import io.vertx.junit5.VertxTestContext;
+import org.junit.jupiter.api.Test;
 
-@RunWith(VertxUnitRunner.class)
-public class TestClose extends TestBase {
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class TestClose extends TestBase {
 
 	private void waitSafely() {
 		try {
@@ -16,26 +15,24 @@ public class TestClose extends TestBase {
 	}
 
 	@Test
-	public void closeHandlerOnServer(TestContext context) {
-		final Async async = context.async();
+	void closeHandlerOnServer(VertxTestContext context) {
 		final EventSource eventSource = eventSource();
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			context.assertTrue(handler.succeeded());
-			context.assertNotNull(connection);
+			assertTrue(handler.succeeded());
+			assertNotNull(connection);
 			eventSource.close(); /* closed by client */
 			waitSafely();
-			context.assertTrue(closeHandlerCalled, "Connection should have been closed on the server at this point");
-			async.complete();
+			assertTrue(closeHandlerCalled, "Connection should have been closed on the server at this point");
+			context.completeNow();
 		});
 	}
 
 	@Test
-	public void closeHandlerOnClient(TestContext context) {
-		final Async async = context.async();
+	void closeHandlerOnClient(VertxTestContext context) {
 		final EventSource eventSource = eventSource();
-		eventSource.onClose(handler -> async.complete());
+		eventSource.onClose(handler -> context.completeNow());
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			context.assertNotNull(connection);
+			assertNotNull(connection);
 			connection.close();
 		});
 	}

@@ -1,73 +1,72 @@
 package io.vertx.ext.web.handler.sse;
 
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import io.vertx.junit5.VertxTestContext;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
-@RunWith(VertxUnitRunner.class)
-public class TestReceiveData extends TestBase {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class TestReceiveData extends TestBase {
 
 	@Test
-	public void testSimpleDataHandler(TestContext context) {
-		final Async async = context.async();
+	void testSimpleDataHandler(VertxTestContext context) {
 		final String message = "Happiness is a warm puppy";
 		final EventSource eventSource = eventSource();
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			context.assertTrue(handler.succeeded());
-			context.assertFalse(handler.failed());
-			context.assertNull(handler.cause());
-			context.assertNotNull(connection);
+			assertTrue(handler.succeeded());
+			assertFalse(handler.failed());
+			assertNull(handler.cause());
+			assertNotNull(connection);
 			eventSource.onMessage(msg -> {
-				context.assertEquals(message + "\n", msg);
-				async.complete();
+				assertEquals(message + "\n", msg);
+				context.completeNow();
 			});
 			connection.data(message);
 		});
 	}
 
 	@Test
-	public void testMultipleDataHandler(TestContext context) {
-		final Async async = context.async();
+	void testMultipleDataHandler(VertxTestContext context) {
 		final List<String> quotes = createData();
 		final EventSource eventSource = eventSource();
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			context.assertTrue(handler.succeeded());
-			context.assertFalse(handler.failed());
-			context.assertNull(handler.cause());
-			context.assertNotNull(connection);
+			assertTrue(handler.succeeded());
+			assertFalse(handler.failed());
+			assertNull(handler.cause());
+			assertNotNull(connection);
 			eventSource.onMessage(msg -> {
 				final StringJoiner joiner = new StringJoiner("\n");
 				quotes.forEach(joiner::add);
-				context.assertEquals(joiner.toString() + "\n", msg);
-				async.complete();
+				assertEquals(joiner.toString() + "\n", msg);
+				context.completeNow();
 			});
 			connection.data(quotes);
 		});
 	}
 
 	@Test
-	public void testConsecutiveDataHandler(TestContext context) {
+	void testConsecutiveDataHandler(VertxTestContext context) {
 		final List<String> quotes = createData();
-		final Async async = context.async(quotes.size());
 		final EventSource eventSource = eventSource();
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			context.assertTrue(handler.succeeded());
-			context.assertFalse(handler.failed());
-			context.assertNull(handler.cause());
-			context.assertNotNull(connection);
+			assertTrue(handler.succeeded());
+			assertFalse(handler.failed());
+			assertNull(handler.cause());
+			assertNotNull(connection);
 			final List<String> received = new ArrayList<>();
 
 			eventSource.onMessage(msg -> {
 				received.add(msg.substring(0, msg.length() - 1)); /* remove trailing linefeed */
-				async.countDown();
-				if (async.count() == 0) {
-					context.assertEquals(quotes, received, "Received quotes don't match");
+				if (received.size() == quotes.size()) {
+					assertEquals(quotes, received, "Received quotes don't match");
+					context.completeNow();
 				}
 			});
 			quotes.forEach(connection::data);
@@ -75,53 +74,51 @@ public class TestReceiveData extends TestBase {
 	}
 
 	@Test
-	public void testEventHandler(TestContext context) {
-		final Async async = context.async();
+	void testEventHandler(VertxTestContext context) {
 		final String eventName = "quotes";
 		final List<String> quotes = createData();
 		final EventSource eventSource = eventSource();
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			context.assertTrue(handler.succeeded());
-			context.assertFalse(handler.failed());
-			context.assertNull(handler.cause());
-			context.assertNotNull(connection);
+			assertTrue(handler.succeeded());
+			assertFalse(handler.failed());
+			assertNull(handler.cause());
+			assertNotNull(connection);
 			eventSource.onEvent("wrong", msg -> {
-				context.fail(); /* this handler should not be called, at all ! */
+				throw new RuntimeException("this handler should not be called, at all !");
 			});
 			eventSource.onEvent(eventName, msg -> {
 				final StringJoiner joiner = new StringJoiner("\n");
 				quotes.forEach(joiner::add);
-				context.assertEquals(joiner.toString() + "\n", msg);
-				async.complete();
+				assertEquals(joiner.toString() + "\n", msg);
+				context.completeNow();
 			});
 			connection.event(eventName, quotes);
 		});
 	}
 
 	@Test
-	public void testId(TestContext context) {
-		final Async async = context.async();
+	void testId(VertxTestContext context) {
 		final String id = "SomeIdentifier";
 		final List<String> quotes = createData();
 		final EventSource eventSource = eventSource();
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			context.assertTrue(handler.succeeded());
-			context.assertFalse(handler.failed());
-			context.assertNull(handler.cause());
-			context.assertNotNull(connection);
+			assertTrue(handler.succeeded());
+			assertFalse(handler.failed());
+			assertNull(handler.cause());
+			assertNotNull(connection);
 			eventSource.onMessage(msg -> {
 				final StringJoiner joiner = new StringJoiner("\n");
 				quotes.forEach(joiner::add);
-				context.assertEquals(joiner.toString() + "\n", msg);
-				context.assertEquals(id, eventSource.lastId());
+				assertEquals(joiner.toString() + "\n", msg);
+				assertEquals(id, eventSource.lastId());
 				eventSource.close();
 				eventSource.connect("/sse?token=" + TOKEN, eventSource.lastId(), secondHandler -> {
-					context.assertTrue(handler.succeeded());
-					context.assertFalse(handler.failed());
-					context.assertNull(handler.cause());
-					context.assertNotNull(connection);
-					context.assertEquals(id, connection.lastId());
-					async.complete();
+					assertTrue(handler.succeeded());
+					assertFalse(handler.failed());
+					assertNull(handler.cause());
+					assertNotNull(connection);
+					assertEquals(id, connection.lastId());
+					context.completeNow();
 				});
 			});
 			connection.id(id, quotes);

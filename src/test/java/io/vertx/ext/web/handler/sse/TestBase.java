@@ -6,13 +6,16 @@ import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerRequest;
-import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.web.Router;
 
-import org.junit.After;
-import org.junit.Before;
+import io.vertx.junit5.VertxExtension;
+import io.vertx.junit5.VertxTestContext;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-public class TestBase {
+@ExtendWith(VertxExtension.class)
+public abstract class TestBase {
 
 	protected final String TOKEN = "test";
 
@@ -27,8 +30,8 @@ public class TestBase {
 	private HttpServer server;
 	private HttpClientOptions options;
 
-	@Before
-	public void createServer(TestContext context) {
+	@BeforeEach
+	public void createServer(VertxTestContext context) {
 		closeHandlerCalled = false;
 		vertx = Vertx.vertx();
 		HttpServerOptions options = new HttpServerOptions();
@@ -57,26 +60,28 @@ public class TestBase {
 		router.get("/sse").handler(sseHandler);
 		addBridge(router);
 		server.requestHandler(router);
-		server.listen(context.asyncAssertSuccess());
+		server.listen(context.completing());
 	}
 
-	@After
-	public void shutDown(TestContext context) {
+	@AfterEach
+	public void shutDown(VertxTestContext context) {
 		connection = null;
 		sseHandler = null;
 		closeHandlerCalled = false;
 		if (vertx != null) {
-			vertx.close(context.asyncAssertSuccess()); // will shut down the server
+			vertx.close(context.completing()); // will shut down the server
+		} else {
+			context.completeNow();
 		}
 	}
 
 	protected void addBridge(Router router) {}
 
-	protected EventSource eventSource() {
+	EventSource eventSource() {
 		return EventSource.create(vertx, clientOptions());
 	}
 
-	protected HttpClient client() {
+	HttpClient client() {
 		return vertx.createHttpClient(clientOptions());
 	}
 

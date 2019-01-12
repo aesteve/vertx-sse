@@ -1,6 +1,7 @@
 import org.gradle.api.tasks.compile.JavaCompile
 
 val vertxVersion = "3.6.2"
+val junit5Version = "5.3.1"
 
 group = "com.github.aesteve"
 version = vertxVersion // align with Vert.x version
@@ -26,10 +27,13 @@ dependencies {
     compile("io.vertx:vertx-codegen:$vertxVersion")
     compile("io.vertx:vertx-web:$vertxVersion")
 
-    testCompile("io.vertx:vertx-unit:$vertxVersion")
-    testCompile("junit:junit:4.12")
+    testCompile("io.vertx:vertx-junit5:$vertxVersion")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit5Version")
 }
 
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
 
 jacoco {
     toolVersion = "0.8.2"
