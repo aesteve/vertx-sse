@@ -6,6 +6,8 @@ package io.vertx.ext.web.handler.sse;
  */
 public final class SSEHeaders {
 
+    private SSEHeaders() {}
+
     public static final String EVENT = "event";
     public static final String ID = "id";
     public static final String RETRY = "retry";
