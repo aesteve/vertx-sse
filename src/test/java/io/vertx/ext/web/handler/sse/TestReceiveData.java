@@ -52,6 +52,29 @@ public class TestReceiveData extends TestBase {
 	}
 
 	@Test
+	public void testConsecutiveDataHandler(TestContext context) {
+		final List<String> quotes = createData();
+		final Async async = context.async(quotes.size());
+		final EventSource eventSource = eventSource();
+		eventSource.connect("/sse?token=" + TOKEN, handler -> {
+			context.assertTrue(handler.succeeded());
+			context.assertFalse(handler.failed());
+			context.assertNull(handler.cause());
+			context.assertNotNull(connection);
+			final List<String> received = new ArrayList<>();
+
+			eventSource.onMessage(msg -> {
+				received.add(msg.substring(0, msg.length() - 1)); /* remove trailing linefeed */
+				async.countDown();
+				if (async.count() == 0) {
+					context.assertEquals(quotes, received, "Received quotes don't match");
+				}
+			});
+			quotes.forEach(connection::data);
+		});
+	}
+
+	@Test
 	public void testEventHandler(TestContext context) {
 		final Async async = context.async();
 		final String eventName = "quotes";
