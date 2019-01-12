@@ -38,17 +38,17 @@ public class ISSVerticle extends AbstractVerticle {
     @Override
     public void start(Future<Void> future) {
         server = vertx.createHttpServer();
-        Router router = Router.router(vertx);
+        var router = Router.router(vertx);
         router.get("/").handler(rc -> rc.reroute("/static/index.html"));
         router.get("/static/*").handler(staticFiles);
+        router.get("/iss/position").handler(sse);
 
         sse.connectHandler(connection -> {
             connection.forward(EB_ADDRESS);
         });
-        router.get("/iss/position").handler(sse);
 
         vertx.setPeriodic(10000, this::fetchISSPosition);
-        server.requestHandler(router::accept);
+        server.requestHandler(router);
         server.listen(PORT, future.<HttpServer>map(v -> null).completer());
     }
 
@@ -60,12 +60,12 @@ public class ISSVerticle extends AbstractVerticle {
                 return;
             }
             resp.bodyHandler(buff -> {
-                JsonObject json = buff.toJsonObject();
+                var json = buff.toJsonObject();
                 if (!"success".equals(json.getString("message"))) {
                     LOG.error("Could not fetch ISS position {}", json.toString());
                     return;
                 }
-                JsonObject position = json.getJsonObject("iss_position");
+                var position = json.getJsonObject("iss_position");
                 vertx.eventBus().publish(EB_ADDRESS, position);
             });
         });
@@ -82,7 +82,5 @@ public class ISSVerticle extends AbstractVerticle {
         }
         server.close(future.completer());
     }
-
-
 
 }
