@@ -9,27 +9,31 @@ import io.vertx.ext.web.handler.sse.impl.EventSourceImpl;
 
 public interface EventSource {
 
-	public static EventSource create(Vertx vertx, HttpClientOptions options) {
+	static EventSource create(Vertx vertx, HttpClientOptions options) {
 		return new EventSourceImpl(vertx, options);
 	}
 
 	@Fluent
-	public EventSource connect(String path, Handler<AsyncResult<Void>> handler);
+	EventSource connect(String path, Handler<AsyncResult<Void>> handler);
 
 	@Fluent
-	public EventSource close();
+	default EventSource close() {
+		return null;
+	}
 
 	@Fluent
-	public EventSource connect(String path, String lastEventId, Handler<AsyncResult<Void>> handler);
+	EventSource connect(String path, String lastEventId, Handler<AsyncResult<Void>> handler);
 
 	@Fluent
-	public EventSource onMessage(Handler<String> messageHandler);
+	EventSource onMessage(Handler<String> messageHandler);
 
 	@Fluent
-	public EventSource onEvent(String eventName, Handler<String> handler);
+	EventSource onEvent(String eventName, Handler<String> handler);
 
 	@Fluent
-	public EventSource onClose(Handler<Void> handler);
+	default EventSource onClose(Handler<Void> handler) {
+		return null;
+	}
 
-	public String lastId();
+	String lastId();
 }
