@@ -11,7 +11,7 @@ public class TestClose extends TestBase {
 
 	private void waitSafely() {
 		try {
-			Thread.sleep(2000); // NOSONAR
+			Thread.sleep(10000); // NOSONAR
 		} catch (InterruptedException ie) {} // NOSONAR
 	}
 
