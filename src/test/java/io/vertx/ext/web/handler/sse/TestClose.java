@@ -11,7 +11,7 @@ public class TestClose extends TestBase {
 
 	private void waitSafely() {
 		try {
-			Thread.sleep(500); // NOSONAR
+			Thread.sleep(2000); // NOSONAR
 		} catch (InterruptedException ie) {} // NOSONAR
 	}
 
@@ -21,7 +21,6 @@ public class TestClose extends TestBase {
 		final EventSource eventSource = eventSource();
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
 			context.assertNotNull(connection);
-			waitSafely();
 			eventSource.close(); /* closed by client */
 			waitSafely();
 			context.assertNull(connection);
