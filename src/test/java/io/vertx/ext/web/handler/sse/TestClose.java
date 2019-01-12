@@ -17,7 +17,8 @@ public class TestClose extends TestBase {
 			context.assertNotNull(connection);
 			eventSource.close(); /* closed by client */
 			try {
-				Thread.sleep(100); /* we have to, since it happens on the server */
+				/* we have to, since it happens on the server */
+				Thread.sleep(100); // NOSONAR
 			} catch (InterruptedException ie) {}
 			context.assertNull(connection);
 			async.complete();

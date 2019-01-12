@@ -6,7 +6,7 @@ addons:
     organization: "aesteve-github"
     token:
       secure: "J9hGO7Zf+4R7eoyTgij2+NjMX4k/WUEoW8HsiXkh7vqow6VgG7lh3HY0fLS4w7TawVKHssGT1FoEK0ilnyL+DnliXBbKNYTjOIQDplML1ld/UPfoU/VmovJGsZIaz1aumW2hn8LOJbiY60iX8GYZJgaQdDI2NNhT+8fK3BC3CTAq/hUETV6ySglw7MRRgZF/NieaOqf97ZgmVauzqSsRYXQBZaxVLDECXhKKpMyys1a61Owj+7dVblMD2/0w+RRrQLhAST/wrUOBUvSm5NahgSJdIjfbWHRUg39fFChYOArDV2sRciFp8PjFUhyrgzyLS8DN8SyOahSeQd33nxOnQYJfB4hTcaKHoQSRdBy1WnpBVve6GkZEGEQdSp6pK+qOMt+CrO7zlRuEIQaibu7NwqDyZDEU+XNqMRgS9Br+f8TyU11LgJLeCyKtjqoCoFlz4SFfFaFxf1lA7jZJroin/jVqiRpxfrf6j1ws4uZ3BR1iflzhoJb1mUqlUmttn2+gKCWfAzIN/uepsKQfpWN5FKXHfVwlEAU81e/vM0gsfVkWuiHXTo3DGY9j8LLmpdQ44Q3IFXfqEEuv/QWTYBiIwAvVCKpOQToWtSHDFSINfoC6GZzNkJtFGbW9+Imq1SVKsig9OUzQEfuD58fdFmC1viaCMjr6YZM31XquYdvyM9g="
-script: gradle -Dsonar.projectKey=aesteve_vertx-sse -Dsonar.organization=aesteve-github -Dsonar.host.url=https://sonarcloud.io jacocoTestReport sonarqube
+script: ./gradlew -Dsonar.projectKey=aesteve_vertx-sse -Dsonar.organization=aesteve-github -Dsonar.host.url=https://sonarcloud.io jacocoTestReport sonarqube
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 cache:
