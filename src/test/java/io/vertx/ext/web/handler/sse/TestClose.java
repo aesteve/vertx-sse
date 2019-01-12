@@ -9,17 +9,21 @@ import org.junit.runner.RunWith;
 @RunWith(VertxUnitRunner.class)
 public class TestClose extends TestBase {
 
+	private void waitSafely() {
+		try {
+			Thread.sleep(500); // NOSONAR
+		} catch (InterruptedException ie) {} // NOSONAR
+	}
+
 	@Test
 	public void closeHandlerOnServer(TestContext context) {
 		final Async async = context.async();
 		final EventSource eventSource = eventSource();
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
 			context.assertNotNull(connection);
+			waitSafely();
 			eventSource.close(); /* closed by client */
-			try {
-				/* we have to, since it happens on the server */
-				Thread.sleep(100); // NOSONAR
-			} catch (InterruptedException ie) {}
+			waitSafely();
 			context.assertNull(connection);
 			async.complete();
 		});
