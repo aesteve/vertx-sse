@@ -53,7 +53,7 @@ public class TestBase {
 		});
 		router.get("/sse").handler(sseHandler);
 		addBridge(router);
-		server.requestHandler(router::accept);
+		server.requestHandler(router);
 		server.listen(context.asyncAssertSuccess());
 	}
 
