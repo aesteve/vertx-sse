@@ -5,7 +5,9 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientRequest;
+import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.web.handler.sse.EventSource;
+import io.vertx.ext.web.handler.sse.SSEHeaders;
 import io.vertx.ext.web.handler.sse.exceptions.ConnectionRefusedException;
 
 import java.util.HashMap;
@@ -60,7 +62,7 @@ public class EventSourceImpl implements EventSource {
 			request.headers().add("Last-Event-ID", lastEventId);
 		}
 		request.setChunked(true);
-		request.headers().add("Accept", "text/event-stream");
+		request.headers().add(HttpHeaders.ACCEPT, "text/event-stream");
 		request.end();
 		return this;
 	}
@@ -109,14 +111,13 @@ public class EventSourceImpl implements EventSource {
 				messageHandler.handle(currentPacket.toString());
 			} else {
 				switch (currentPacket.headerName) {
-					case "event":
+					case SSEHeaders.EVENT:
 						handler = eventHandlers.get(currentPacket.headerValue);
 						break;
-					case "id":
-						handler = messageHandler;
+					case SSEHeaders.ID:
 						lastId = currentPacket.headerValue;
 						break;
-					case "retry":
+					case SSEHeaders.RETRY:
 						// FIXME : we should automatically handle this ?
 				}
 				if (handler != null) {

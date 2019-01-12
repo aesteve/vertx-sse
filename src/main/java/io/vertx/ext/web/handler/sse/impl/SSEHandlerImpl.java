@@ -1,6 +1,8 @@
 package io.vertx.ext.web.handler.sse.impl;
 
+import io.netty.buffer.Unpooled;
 import io.vertx.core.Handler;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
@@ -11,6 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SSEHandlerImpl implements SSEHandler {
+
+	// README: DO NOT MUTATE THIS! (using EMPTY_BUFFER.appendBuffer(...) for instance)
+	private static final Buffer EMPTY_BUFFER = Buffer.buffer(Unpooled.EMPTY_BUFFER);
 
 	private final List<Handler<SSEConnection>> connectHandlers;
 	private final List<Handler<SSEConnection>> closeHandlers;
@@ -42,7 +47,7 @@ public class SSEHandlerImpl implements SSEHandler {
 		if (!connection.rejected()) {
 			response.setStatusCode(200);
 			response.setChunked(true);
-			response.write(""); // FIXME : how to trigger the response handler with no data ?
+			response.write(EMPTY_BUFFER);
 		}
 	}
 

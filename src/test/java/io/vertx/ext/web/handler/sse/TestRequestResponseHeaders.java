@@ -1,42 +1,45 @@
 package io.vertx.ext.web.handler.sse;
 
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import io.vertx.core.http.HttpClientResponse;
+import io.vertx.core.http.HttpHeaders;
+import io.vertx.junit5.VertxTestContext;
+import org.junit.jupiter.api.Test;
 
-@RunWith(VertxUnitRunner.class)
-public class TestRequestResponseHeaders extends TestBase {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class TestRequestResponseHeaders extends TestBase {
 
 	@Test
-	public void noHeaderTextEventStreamHttpRequest(TestContext context) {
-		final Async async = context.async();
+	void noHeaderTextEventStreamHttpRequest(VertxTestContext context) {
 		client().get("/sse", response -> {
-			context.assertEquals(406, response.statusCode());
-			async.complete();
+			context.verify(() -> {
+				assertEquals(406, response.statusCode());
+				context.completeNow();
+			});
 		}).putHeader("Accept", "foo").end();
 	}
 
 	@Test
-	public void noHeaderHttpRequest(TestContext context) {
-		final Async async = context.async();
+	void noHeaderHttpRequest(VertxTestContext context) {
 		client().getNow("/sse", response -> {
-			context.assertEquals("text/event-stream", response.getHeader("Content-Type"));
-			context.assertEquals("no-cache", response.getHeader("Cache-Control"));
-			context.assertEquals("keep-alive", response.getHeader("Connection"));
-			async.complete();
+			assertSSEHeaders(context, response);
+			context.completeNow();
 		});
 	}
 
 	@Test
-	public void correctResponseHeaders(TestContext context) {
-		final Async async = context.async();
+	void correctResponseHeaders(VertxTestContext context) {
 		client().get("/sse", response -> {
-			context.assertEquals("text/event-stream", response.getHeader("Content-Type"));
-			context.assertEquals("no-cache", response.getHeader("Cache-Control"));
-			context.assertEquals("keep-alive", response.getHeader("Connection"));
-			async.complete();
+			assertSSEHeaders(context, response);
+			context.completeNow();
 		}).putHeader("Accept", "text/event-stream").end();
+	}
+
+	private void assertSSEHeaders(VertxTestContext ctx, HttpClientResponse response) {
+		ctx.verify(() -> {
+			assertEquals("text/event-stream", response.getHeader(HttpHeaders.CONTENT_TYPE));
+			assertEquals("no-cache", response.getHeader(HttpHeaders.CACHE_CONTROL));
+			assertEquals("keep-alive", response.getHeader(HttpHeaders.CONNECTION));
+		});
 	}
 }

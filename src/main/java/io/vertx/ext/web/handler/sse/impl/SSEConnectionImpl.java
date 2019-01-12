@@ -8,6 +8,7 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.sse.SSEConnection;
+import io.vertx.ext.web.handler.sse.SSEHeaders;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,9 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 public class SSEConnectionImpl implements SSEConnection {
+
+	private static final String MSG_SEPARATOR = "\n";
+	private static final String PACKET_SEPARATOR = "\n\n";
 
 	private final RoutingContext context;
 	private boolean rejected;
@@ -57,18 +61,18 @@ public class SSEConnectionImpl implements SSEConnection {
 
 	@Override
 	public SSEConnection comment(String comment) {
-		context.response().write("comment: " + comment + "\n\n");
+		context.response().write("comment: " + comment + PACKET_SEPARATOR);
 		return this;
 	}
 
 	@Override
 	public SSEConnection retry(Long delay, List<String> data) {
-		return withHeader("retry", delay.toString(), data);
+		return withHeader(SSEHeaders.RETRY, delay.toString(), data);
 	}
 
 	@Override
 	public SSEConnection retry(Long delay, String data) {
-		return withHeader("retry", delay.toString(), data);
+		return withHeader(SSEHeaders.RETRY, delay.toString(), data);
 	}
 
 	@Override
@@ -83,29 +87,32 @@ public class SSEConnectionImpl implements SSEConnection {
 
 	@Override
 	public SSEConnection event(String eventName, List<String> data) {
-		return withHeader("event", eventName, data);
+		return withHeader(SSEHeaders.EVENT, eventName, data);
 	}
 
 	@Override
 	public SSEConnection event(String eventName, String data) {
-		return withHeader("event", eventName, data);
+		return withHeader(SSEHeaders.EVENT, eventName, data);
 	}
 
 	@Override
 	public SSEConnection id(String id, List<String> data) {
-		return withHeader("id", id, data);
+		return withHeader(SSEHeaders.ID, id, data);
 	}
 
 	@Override
 	public SSEConnection id(String id, String data) {
-		return withHeader("id", id, data);
+		return withHeader(SSEHeaders.ID, id, data);
 	}
 
 	@Override
 	public SSEConnection close() {
 		try {
 			context.response().end(); // best effort
-		} catch(VertxException ve) {} // connection has already been closed by the browser
+		} catch(VertxException | IllegalStateException e) {
+			// connection has already been closed by the browser
+			// do not log to avoid performance issues (ddos issue if client opening and closing alot of connections abruptly)
+		}
 		if (!consumers.isEmpty()) {
 			consumers.forEach(MessageConsumer::unregister);
 		}
@@ -140,21 +147,18 @@ public class SSEConnectionImpl implements SSEConnection {
 	}
 
 	private SSEConnection writeHeader(String headerName, String headerValue) {
-		context.response().write(headerName + ": " + headerValue + "\n");
+		context.response().write(headerName + ": " + headerValue + MSG_SEPARATOR);
 		return this;
 	}
 
 	private SSEConnection writeData(String data) {
-		context.response().write("data: " + data + "\n\n");
+		context.response().write("data: " + data + PACKET_SEPARATOR);
 		return this;
 	}
 
 	private SSEConnection appendData(List<String> data) {
-		String separator = "\n";
 		for (int i = 0; i < data.size(); i++) {
-			if (i == data.size() - 1) {
-				separator += "\n";
-			}
+			String separator = i == data.size() - 1 ? PACKET_SEPARATOR : MSG_SEPARATOR;
 			context.response().write("data: " + data.get(i) + separator);
 		}
 		return this;
@@ -162,8 +166,8 @@ public class SSEConnectionImpl implements SSEConnection {
 
 	private void ebMsgHandler(Message<?> msg) {
 		MultiMap headers = msg.headers();
-		String eventName = headers.get("event");
-		String id = headers.get("id");
+		String eventName = headers.get(SSEHeaders.EVENT);
+		String id = headers.get(SSEHeaders.ID);
 		String data = msg.body() == null ? "" : msg.body().toString();
 		if (eventName != null) {
 			this.event(eventName, data);

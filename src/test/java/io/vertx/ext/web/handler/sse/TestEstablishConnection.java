@@ -1,52 +1,57 @@
 package io.vertx.ext.web.handler.sse;
 
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.ext.web.handler.sse.exceptions.ConnectionRefusedException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import io.vertx.junit5.VertxTestContext;
+import org.junit.jupiter.api.Test;
 
-@RunWith(VertxUnitRunner.class)
-public class TestEstablishConnection extends TestBase {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class TestEstablishConnection extends TestBase {
 
 	@Test
-	public void noToken(TestContext context) {
-		final Async async = context.async();
+	void noToken(VertxTestContext context) {
 		eventSource().connect("/sse", handler -> {
-			context.assertFalse(handler.succeeded());
-			context.assertTrue(handler.failed());
-			context.assertNotNull(handler.cause());
-			context.assertTrue(handler.cause() instanceof ConnectionRefusedException);
-			final ConnectionRefusedException cre = (ConnectionRefusedException) handler.cause();
-			context.assertEquals(401, cre.statusCode());
-			async.complete();
+			context.verify(() -> {
+				assertFalse(handler.succeeded());
+				assertTrue(handler.failed());
+				assertNotNull(handler.cause());
+				assertTrue(handler.cause() instanceof ConnectionRefusedException);
+				final ConnectionRefusedException cre = (ConnectionRefusedException) handler.cause();
+				assertEquals(401, cre.statusCode());
+				context.completeNow();
+			});
 		});
 	}
 
 	@Test
-	public void invalidToken(TestContext context) {
-		Async async = context.async();
+	void invalidToken(VertxTestContext context) {
 		eventSource().connect("/sse?token=yourmum", handler -> {
-			context.assertFalse(handler.succeeded());
-			context.assertTrue(handler.failed());
-			final Throwable cause = handler.cause();
-			context.assertNotNull(cause);
-			context.assertTrue(cause instanceof ConnectionRefusedException);
-			final ConnectionRefusedException cre = (ConnectionRefusedException) cause;
-			context.assertEquals(403, cre.statusCode());
-			async.complete();
+			context.verify(() -> {
+				assertFalse(handler.succeeded());
+				assertTrue(handler.failed());
+				final Throwable cause = handler.cause();
+				assertNotNull(cause);
+				assertTrue(cause instanceof ConnectionRefusedException);
+				final ConnectionRefusedException cre = (ConnectionRefusedException) cause;
+				assertEquals(403, cre.statusCode());
+				context.completeNow();
+			});
 		});
 	}
 
 	@Test
-	public void validConnection(TestContext context) {
-		final Async async = context.async();
+	void validConnection(VertxTestContext context) {
 		eventSource().connect("/sse?token=" + TOKEN, handler -> {
-			context.assertTrue(handler.succeeded());
-			context.assertFalse(handler.failed());
-			context.assertNull(handler.cause());
-			async.complete();
+			context.verify(() -> {
+				assertTrue(handler.succeeded());
+				assertFalse(handler.failed());
+				assertNull(handler.cause());
+				context.completeNow();
+			});
 		});
 	}
 

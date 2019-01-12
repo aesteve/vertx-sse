@@ -5,9 +5,9 @@ import io.vertx.core.buffer.Buffer;
 class SSEPacket {
 
 	/* Use constants, but hope this will never change in the future (it should'nt) */
-	private final static String END_OF_PACKET = "\n\n";
-	private final static String LINE_SEPARATOR = "\n";
-	private final static String FIELD_SEPARATOR = ":";
+	private static final String END_OF_PACKET = "\n\n";
+	private static final String LINE_SEPARATOR = "\n";
+	private static final String FIELD_SEPARATOR = ":";
 
 	private final StringBuilder payload;
 	String headerName;
