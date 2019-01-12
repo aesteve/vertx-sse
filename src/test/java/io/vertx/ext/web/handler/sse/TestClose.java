@@ -28,10 +28,11 @@ class TestClose extends TestBase {
 			context.verify(() -> {
 				assertTrue(handler.succeeded());
 				assertNotNull(connection);
+                sseHandler.closeHandler(sse -> {
+                    context.completeNow();
+                });
+                waitSafely();
 				eventSource.close(); /* closed by client */
-				waitSafely();
-				assertTrue(closeHandlerCalled, "Connection should have been closed on the server at this point");
-				context.completeNow();
 			});
 		});
 	}

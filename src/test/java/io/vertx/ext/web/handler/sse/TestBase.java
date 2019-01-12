@@ -25,14 +25,12 @@ public abstract class TestBase {
 	protected Vertx vertx;
 	protected SSEConnection connection;
 	protected SSEHandler sseHandler;
-	protected boolean closeHandlerCalled = false;
 
 	private HttpServer server;
 	private HttpClientOptions options;
 
 	@BeforeEach
 	public void createServer(VertxTestContext context) {
-		closeHandlerCalled = false;
 		vertx = Vertx.vertx();
 		HttpServerOptions options = new HttpServerOptions();
 		options.setHost(HOST);
@@ -52,7 +50,6 @@ public abstract class TestBase {
 			}
 		});
 		sseHandler.closeHandler(connection -> {
-			closeHandlerCalled = true;
 			if (this.connection != null) {
 				this.connection = null;
 			}
@@ -67,7 +64,6 @@ public abstract class TestBase {
 	public void shutDown(VertxTestContext context) {
 		connection = null;
 		sseHandler = null;
-		closeHandlerCalled = false;
 		if (vertx != null) {
 			vertx.close(context.completing()); // will shut down the server
 		} else {
