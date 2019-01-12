@@ -29,14 +29,18 @@ class TestEventBusForwarder extends TestBase {
 	void forwardData(VertxTestContext context) {
 		final EventSource eventSource = eventSource();
 		eventSource.onMessage(message -> {
-			assertNotNull(message);
-			assertEquals(msg, new JsonObject(message));
-			context.completeNow();
+			context.verify(() -> {
+				assertNotNull(message);
+				assertEquals(msg, new JsonObject(message));
+				context.completeNow();
+			});
 		});
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			assertTrue(handler.succeeded());
-			assertFalse(handler.failed());
-			assertNull(handler.cause());
+			context.verify(() -> {
+				assertTrue(handler.succeeded());
+				assertFalse(handler.failed());
+				assertNull(handler.cause());
+			});
 			vertx.eventBus().publish(EB_ADDR, msg);
 		});
 	}
@@ -46,14 +50,18 @@ class TestEventBusForwarder extends TestBase {
 		final EventSource eventSource = eventSource();
 		final String eventName = "someQuote";
 		eventSource.onEvent(eventName, message -> {
-			assertNotNull(message);
-			assertEquals(msg, new JsonObject(message));
+			context.verify(() -> {
+				assertNotNull(message);
+				assertEquals(msg, new JsonObject(message));
+			});
 			context.completeNow();
 		});
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			assertTrue(handler.succeeded());
-			assertFalse(handler.failed());
-			assertNull(handler.cause());
+			context.verify(() -> {
+				assertTrue(handler.succeeded());
+				assertFalse(handler.failed());
+				assertNull(handler.cause());
+			});
 			final DeliveryOptions options = new DeliveryOptions();
 			options.addHeader("event", eventName);
 			vertx.eventBus().publish(EB_ADDR, msg, options);
@@ -65,15 +73,19 @@ class TestEventBusForwarder extends TestBase {
 		final EventSource eventSource = eventSource();
 		final String id = "someQuote";
 		eventSource.onMessage(message -> {
-			assertNotNull(message);
-			assertEquals(msg, new JsonObject(message));
-			assertEquals(id, eventSource.lastId());
-			context.completeNow();
+			context.verify(() -> {
+				assertNotNull(message);
+				assertEquals(msg, new JsonObject(message));
+				assertEquals(id, eventSource.lastId());
+				context.completeNow();
+			});
 		});
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			assertTrue(handler.succeeded());
-			assertFalse(handler.failed());
-			assertNull(handler.cause());
+			context.verify(() -> {
+				assertTrue(handler.succeeded());
+				assertFalse(handler.failed());
+				assertNull(handler.cause());
+			});
 			final DeliveryOptions options = new DeliveryOptions();
 			options.addHeader("id", id);
 			vertx.eventBus().publish(EB_ADDR, msg, options);

@@ -12,15 +12,17 @@ class TestRequestResponseHeaders extends TestBase {
 	@Test
 	void noHeaderTextEventStreamHttpRequest(VertxTestContext context) {
 		client().get("/sse", response -> {
-			assertEquals(406, response.statusCode());
-			context.completeNow();
+			context.verify(() -> {
+				assertEquals(406, response.statusCode());
+				context.completeNow();
+			});
 		}).putHeader("Accept", "foo").end();
 	}
 
 	@Test
 	void noHeaderHttpRequest(VertxTestContext context) {
 		client().getNow("/sse", response -> {
-			assertSSEHeaders(response);
+			assertSSEHeaders(context, response);
 			context.completeNow();
 		});
 	}
@@ -28,14 +30,16 @@ class TestRequestResponseHeaders extends TestBase {
 	@Test
 	void correctResponseHeaders(VertxTestContext context) {
 		client().get("/sse", response -> {
-			assertSSEHeaders(response);
+			assertSSEHeaders(context, response);
 			context.completeNow();
 		}).putHeader("Accept", "text/event-stream").end();
 	}
 
-	private void assertSSEHeaders(HttpClientResponse response) {
-		assertEquals("text/event-stream", response.getHeader(HttpHeaders.CONTENT_TYPE));
-		assertEquals("no-cache", response.getHeader(HttpHeaders.CACHE_CONTROL));
-		assertEquals("keep-alive", response.getHeader(HttpHeaders.CONNECTION));
+	private void assertSSEHeaders(VertxTestContext ctx, HttpClientResponse response) {
+		ctx.verify(() -> {
+			assertEquals("text/event-stream", response.getHeader(HttpHeaders.CONTENT_TYPE));
+			assertEquals("no-cache", response.getHeader(HttpHeaders.CACHE_CONTROL));
+			assertEquals("keep-alive", response.getHeader(HttpHeaders.CONNECTION));
+		});
 	}
 }

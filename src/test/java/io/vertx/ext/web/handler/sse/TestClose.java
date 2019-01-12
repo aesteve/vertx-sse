@@ -1,11 +1,17 @@
 package io.vertx.ext.web.handler.sse;
 
+import io.vertx.junit5.Timeout;
+import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ExtendWith(VertxExtension.class)
 class TestClose extends TestBase {
 
 	private void waitSafely() {
@@ -15,15 +21,18 @@ class TestClose extends TestBase {
 	}
 
 	@Test
+	@Timeout(value = 5, timeUnit = TimeUnit.SECONDS)
 	void closeHandlerOnServer(VertxTestContext context) {
 		final EventSource eventSource = eventSource();
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			assertTrue(handler.succeeded());
-			assertNotNull(connection);
-			eventSource.close(); /* closed by client */
-			waitSafely();
-			assertTrue(closeHandlerCalled, "Connection should have been closed on the server at this point");
-			context.completeNow();
+			context.verify(() -> {
+				assertTrue(handler.succeeded());
+				assertNotNull(connection);
+				eventSource.close(); /* closed by client */
+				waitSafely();
+				assertTrue(closeHandlerCalled, "Connection should have been closed on the server at this point");
+				context.completeNow();
+			});
 		});
 	}
 
@@ -32,7 +41,9 @@ class TestClose extends TestBase {
 		final EventSource eventSource = eventSource();
 		eventSource.onClose(handler -> context.completeNow());
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			assertNotNull(connection);
+			context.verify(() -> {
+				assertNotNull(connection);
+			});
 			connection.close();
 		});
 	}

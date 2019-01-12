@@ -24,12 +24,16 @@ class TestEventBusBridgeMapped extends TestBase {
 		String url = "/bridge/mapped/" + id;
 		String message = "sent over the event bus, on a mapped address";
 		eventSource().connect(url, res -> {
-			assertFalse(res.failed());
+			ctx.verify(() -> {
+				assertFalse(res.failed());
+			});
 			vertx.eventBus().publish("anotheraddress", "should not be received");
 			vertx.eventBus().publish(id, message);
 		}).onMessage(msg -> {
-			assertEquals(message + "\n", msg);
-			ctx.completeNow();
+			ctx.verify(() -> {
+				assertEquals(message + "\n", msg);
+				ctx.completeNow();
+			});
 		});
 	}
 

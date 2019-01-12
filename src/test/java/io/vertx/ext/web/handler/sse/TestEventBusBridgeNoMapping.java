@@ -23,11 +23,15 @@ class TestEventBusBridgeNoMapping extends TestBase {
 		final String address = "/bridge/address";
 		final String message = "sent over the event bus";
 		eventSource().connect(address, res -> {
-			assertFalse(res.failed());
+			ctx.verify(() -> {
+				assertFalse(res.failed());
+			});
 			vertx.eventBus().publish(address, message);
 		}).onMessage(msg -> {
-			assertEquals(message + "\n", msg);
-			ctx.completeNow();
+			ctx.verify(() -> {
+				assertEquals(message + "\n", msg);
+				ctx.completeNow();
+			});
 		});
 	}
 

@@ -20,13 +20,17 @@ class TestReceiveData extends TestBase {
 		final String message = "Happiness is a warm puppy";
 		final EventSource eventSource = eventSource();
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			assertTrue(handler.succeeded());
-			assertFalse(handler.failed());
-			assertNull(handler.cause());
-			assertNotNull(connection);
+			context.verify(() -> {
+				assertTrue(handler.succeeded());
+				assertFalse(handler.failed());
+				assertNull(handler.cause());
+				assertNotNull(connection);
+			});
 			eventSource.onMessage(msg -> {
-				assertEquals(message + "\n", msg);
-				context.completeNow();
+				context.verify(() -> {
+					assertEquals(message + "\n", msg);
+					context.completeNow();
+				});
 			});
 			connection.data(message);
 		});
@@ -37,15 +41,19 @@ class TestReceiveData extends TestBase {
 		final List<String> quotes = createData();
 		final EventSource eventSource = eventSource();
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			assertTrue(handler.succeeded());
-			assertFalse(handler.failed());
-			assertNull(handler.cause());
-			assertNotNull(connection);
+			context.verify(() -> {
+				assertTrue(handler.succeeded());
+				assertFalse(handler.failed());
+				assertNull(handler.cause());
+				assertNotNull(connection);
+			});
 			eventSource.onMessage(msg -> {
 				final StringJoiner joiner = new StringJoiner("\n");
 				quotes.forEach(joiner::add);
-				assertEquals(joiner.toString() + "\n", msg);
-				context.completeNow();
+				context.verify(() -> {
+					assertEquals(joiner.toString() + "\n", msg);
+					context.completeNow();
+				});
 			});
 			connection.data(quotes);
 		});
@@ -56,17 +64,20 @@ class TestReceiveData extends TestBase {
 		final List<String> quotes = createData();
 		final EventSource eventSource = eventSource();
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			assertTrue(handler.succeeded());
-			assertFalse(handler.failed());
-			assertNull(handler.cause());
-			assertNotNull(connection);
+			context.verify(() -> {
+				assertTrue(handler.succeeded());
+				assertFalse(handler.failed());
+				assertNull(handler.cause());
+				assertNotNull(connection);
+			});
 			final List<String> received = new ArrayList<>();
-
 			eventSource.onMessage(msg -> {
 				received.add(msg.substring(0, msg.length() - 1)); /* remove trailing linefeed */
 				if (received.size() == quotes.size()) {
-					assertEquals(quotes, received, "Received quotes don't match");
-					context.completeNow();
+					context.verify(() -> {
+						assertEquals(quotes, received, "Received quotes don't match");
+						context.completeNow();
+					});
 				}
 			});
 			quotes.forEach(connection::data);
@@ -102,23 +113,29 @@ class TestReceiveData extends TestBase {
 		final List<String> quotes = createData();
 		final EventSource eventSource = eventSource();
 		eventSource.connect("/sse?token=" + TOKEN, handler -> {
-			assertTrue(handler.succeeded());
-			assertFalse(handler.failed());
-			assertNull(handler.cause());
-			assertNotNull(connection);
+			context.verify(() -> {
+				assertTrue(handler.succeeded());
+				assertFalse(handler.failed());
+				assertNull(handler.cause());
+				assertNotNull(connection);
+			});
 			eventSource.onMessage(msg -> {
 				final StringJoiner joiner = new StringJoiner("\n");
 				quotes.forEach(joiner::add);
-				assertEquals(joiner.toString() + "\n", msg);
-				assertEquals(id, eventSource.lastId());
+				context.verify(() -> {
+					assertEquals(joiner.toString() + "\n", msg);
+					assertEquals(id, eventSource.lastId());
+				});
 				eventSource.close();
 				eventSource.connect("/sse?token=" + TOKEN, eventSource.lastId(), secondHandler -> {
-					assertTrue(handler.succeeded());
-					assertFalse(handler.failed());
-					assertNull(handler.cause());
-					assertNotNull(connection);
-					assertEquals(id, connection.lastId());
-					context.completeNow();
+					context.verify(() -> {
+						assertTrue(handler.succeeded());
+						assertFalse(handler.failed());
+						assertNull(handler.cause());
+						assertNotNull(connection);
+						assertEquals(id, connection.lastId());
+						context.completeNow();
+					});
 				});
 			});
 			connection.id(id, quotes);
