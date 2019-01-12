@@ -13,6 +13,7 @@ public class EventBusSSEBridgeImpl extends SSEHandlerImpl implements EventBusSSE
         super();
         connectHandler(sseConnection -> {
             sseConnection.forward(mapper.apply(sseConnection.request()));
+            closeHandler(v -> sseConnection.close());
         });
     }
 
